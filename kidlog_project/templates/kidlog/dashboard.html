@@ -1,0 +1,180 @@
+{% extends "base.html" %} {% block content %} {% load static %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<div class="container py-4">
+    <h2 class="mb-4">{{ child.name }} の成長記録</h2>
+    <div class="row mb-3">
+        <!-- 身長・体重入力 -->
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div class="card-header">
+                    <h5 class="mb-0">身長・体重</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="">
+                        {% csrf_token %} {{ htmt_form.as_p }}
+                        <button type="submit" class="btn btn-primary" name="htwt_record">追加</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 日記入力 -->
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div class="card-header">
+                    <h5 class="mb-0">日記</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %} {{ diary_form.as_p }}
+                        <button type="submit" class="btn btn-primary" name="diary_record">登録</button>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'diary_list' child.id %}" class="btn btn-outline-primary btn-sm">過去の日記を見る </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 乳児記録 -->
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div class="card-header">
+                    <h5 class="mb-0">乳児記録</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- カテゴリー選択 -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">カテゴリーを選択</label>
+                            <select id="category" class="form-select" onchange="showForm(this.value)">
+                            <option value="">選択してください</option>
+                            <option value="milk">授乳</option>
+                            <option value="sleep">睡眠</option>
+                            <option value="poop">うんち</option>
+                            <option value="pee">おしっこ</option>
+                            <option value="temp">体温</option>
+                            <option value="food">離乳食</option>
+                            </select>
+                        </div>
+
+                        <!-- 各種フォーム -->
+                        <div id="form-milk" class="record-form d-none">
+                            <h6>🍼 授乳</h6>
+                            {{ milk_form.as_p }}
+                        </div>
+                        <div id="form-sleep" class="record-form d-none">
+                            <h6>😴 睡眠</h6>
+                            {{ sleep_form.as_p }}
+                        </div>
+                        <div id="form-poop" class="record-form d-none">
+                            <h6>💩 うんち</h6>
+                            {{ poop_form.as_p }}
+                        </div>
+                        <div id="form-pee" class="record-form d-none">
+                            <h6>🚽 おしっこ</h6>
+                            {{ pee_form.as_p }}
+                        </div>
+                        <div id="form-temp" class="record-form d-none">
+                            <h6>🌡️ 体温</h6>
+                            {{ temp_form.as_p }}
+                        </div>
+                        <div id="form-food" class="record-form d-none">
+                            <h6>🍚 離乳食</h6>
+                            {{ food_form.as_p }}
+                        </div>
+
+                        <div>
+                            <button type="submit" class="btn btn-primary" name="infant_record">追加</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'baby_record_overview' child.id %}" class="btn btn-outline-primary btn-sm">今日の詳細タイムラインを見る </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mb-3">
+        <!-- 成長記録カード -->
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link {% if mode == 'today' %}active{% endif %}" href="?mode=today">今日</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if mode == 'week' %}active{% endif %}" href="?mode=week">週平均</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if mode == 'month' %}active{% endif %}" href="?mode=month">月平均</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">授乳: {{ record_dict.avg_milk }} ml</li>
+                        <li class="list-group-item">うんち: {{ record_dict.avg_poop }} 回</li>
+                        <li class="list-group-item">おしっこ: {{ record_dict.avg_pee }} 回</li>
+                        <li class="list-group-item">睡眠: {{ record_dict.avg_sleep }} 時間</li>
+                        <li class="list-group-item">体温: {{ record_dict.avg_temp }} ℃</li>
+                        <li class="list-group-item">離乳食: {{ record_dict.avg_food }} 回</li>
+                        <li class="list-group-item">メニュー: {{ record_dict.menu_list }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI質問 -->
+        <div class="col-md-6 mb-3">
+            <div class="card p-3">
+                <div class="card-header">
+                    <h5 class="mb-0">AI質問</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="aiForm" action="{% url 'ai_chat' child.id %}">
+                        {% csrf_token %}
+                        <textarea class="form-control mb-2" name="first_ai_question" id="question" rows="10" placeholder="質問を入力…"></textarea>
+                        <span id="error" class="error" style="display:none">※入力が必要です。</span><br>
+                        <button type="submit" class="btn btn-primary" name="ai_question">質問</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 成長記録グラフ -->
+        <div class="col-md-9">
+            <div class="card p-3">
+                <div class="card-header">
+                    <h5 class="mb-0">身長と体重の推移</h5>
+                </div>
+                <canvas id="growthChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- 写真表示 -->
+        <div class="col-md-3">
+            <div class="card p-3 text-center">
+                <div class="card-header">
+                    <h5 class="mb-0">写真</h5>
+                </div>
+                {% if child.photo %}
+                <img src="{{ child.photo.url }}" alt="{{ child.name }}" class="photo-preview"> {% else %}
+                <img src="https://via.placeholder.com/400x300?text=No+Photo" alt="no photo" class="photo-preview"> {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {{ record_dict.growth_chart|json_script:"growth-chart-data" }}
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="{% static 'js/dashboard.js' %}"></script>
+    {% endblock %}

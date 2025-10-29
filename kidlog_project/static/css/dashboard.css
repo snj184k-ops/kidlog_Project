@@ -1,0 +1,10 @@
+.card {
+    height: 100%;
+}
+
+.photo-preview {
+    max-width: 250px;
+    max-height: 250px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+}

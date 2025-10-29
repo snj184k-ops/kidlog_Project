@@ -1,0 +1,29 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<div class="container mt-4">
+    <h3 class="mb-3">
+        {% if form.instance.pk %}📖 日記の確認・編集{% else %}✍️ 新しい日記の追加{% endif %}
+    </h3>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">日付・時間</label> {{ form.time }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">内容</label> {{ form.note }}
+                </div>
+            </div>
+            <div class="card-footer text-end">
+                <a href="{% url 'diary_list' child.id %}" class="btn btn-outline-secondary">戻る</a>
+                <button type="submit" class="btn btn-success">
+            {% if form.instance.pk %}更新する{% else %}登録する{% endif %}
+        </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

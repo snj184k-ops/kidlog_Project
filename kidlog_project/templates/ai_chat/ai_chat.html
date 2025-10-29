@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block content %} {% load static %}
+
+<div class="bg-gray-100 flex flex-col items-center p-6">
+    <div class="w-full max-w-2xl bg-white rounded-xl shadow p-4 flex flex-col h-[80vh]">
+        <h2 class="text-2xl font-bold mb-4 text-center border-b pb-2">💬 AIチャット</h2>
+
+        <!-- チャット表示欄 -->
+        <div id="chatBox" class="flex-1 overflow-y-auto space-y-4">
+            {% for message in chat_history %} {% if message.role == 'user' %}
+            <div class="flex justify-end">
+                <div class="bg-blue-500 text-white rounded-2xl px-4 py-2 max-w-xs">
+                    {{ message.text }}
+                </div>
+            </div>
+            {% else %}
+            <div class="flex justify-start">
+                <div class="bg-gray-200 text-gray-800 rounded-2xl px-4 py-2 max-w-xs">
+                    {{ message.text }}
+                </div>
+            </div>
+            {% endif %} {% endfor %}
+        </div>
+
+        <!-- 入力フォーム -->
+        <form method="post" class="mt-4 flex">
+            {% csrf_token %}
+            <input name="prompt" type="text" placeholder="メッセージを入力..." class="flex-1 border rounded-l-xl p-2 focus:outline-none" required>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-xl hover:bg-blue-600">送信</button>
+        </form>
+
+    </div>
+    <div class="text-end mt-4">
+        <a href="{% url 'dashboard' child_id %}" class="btn btn-secondary">ダッシュボードへ戻る</a>
+    </div>
+</div>
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="text/javascript" src="{% static 'js/ai_chat.js' %}"></script>
+
+{% endblock %}

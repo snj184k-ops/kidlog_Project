@@ -1,0 +1,56 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<div class="container mt-4">
+    <h3 class="mb-3">📔 過去の日記一覧</h3>
+
+    <!-- 月別タブ -->
+    <ul class="nav nav-tabs mb-3" id="monthTabs" role="tablist">
+        {% for month, records in diary_by_month.items %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab-{{ month }}" data-bs-toggle="tab" data-bs-target="#content-{{ month }}" type="button" role="tab">
+        {{ month }}
+        </button>
+        </li>
+        {% empty %}
+        <li class="nav-item text-muted">日記がまだありません。</li>
+        {% endfor %}
+    </ul>
+
+    <!-- 月別タブ内容 -->
+    <div class="tab-content" id="monthTabsContent">
+        {% for month, records in diary_by_month.items %}
+        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="content-{{ month }}" role="tabpanel">
+            {% for record in records %}
+            <div class="card mb-2 shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1 text-muted">{{ record.time|date:"Y年m月d日 H:i" }}</h6>
+                        <h6 class="mb-1">要約：{{ record.summary }}</h6>
+                        <p class="mb-1">内容：{{ record.note|truncatechars:50 }}</p>
+                    </div>
+                    <div>
+                        <a href="{% url 'diary_edit' child.id record.id %}" class="btn btn-sm btn-outline-primary me-2">確認・変更</a>
+                        <form method="post" action="{% url 'diary_delete' child.id record.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">削除</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">この月には記録がありません。</p>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+
+    <!-- 新規追加 -->
+    <div class="text-end mt-4">
+        <a href="{% url 'diary_add' child.id %}" class="btn btn-success">＋ 新しい日記を追加</a>
+        <a href="{% url 'dashboard' child.id %}" class="btn btn-secondary">ダッシュボードへ戻る</a>
+    </div>
+</div>
+
+{% endblock %}

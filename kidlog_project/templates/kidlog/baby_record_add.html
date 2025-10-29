@@ -1,0 +1,73 @@
+{% extends "base.html" %} {% block content %} {% load static %}
+<div class="container py-4">
+
+    <h2>{{ child.name }}の記録入力</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- カテゴリー選択 -->
+        <div class="mb-3">
+            <label for="category" class="form-label">カテゴリー</label>
+            <select class="form-select" id="category" name="category" required>
+                    <option value="">選択してください</option>
+                    <option value="milk">授乳</option>
+                    <option value="sleep">睡眠</option>
+                    <option value="pee">おしっこ</option>
+                    <option value="poop">うんち</option>
+                    <option value="temperature">体温</option>
+                    <option value="food">離乳食</option>
+                </select>
+        </div>
+
+        <!-- 時間 -->
+        <div class="mb-3">
+            <label for="time" class="form-label">時間</label>
+            <input type="datetime-local" class="form-control" id="time" name="time" required>
+        </div>
+
+        <!-- 授乳 -->
+        <div class="mb-3 category-field" data-category="milk" style="display:none;">
+            <label for="amount" class="form-label">ミルク量 (ml)</label>
+            <input type="number" class="form-control" name="amount">
+        </div>
+
+        <!-- 睡眠 -->
+        <div class="mb-3 category-field" data-category="sleep" style="display:none;">
+            <label for="start_time" class="form-label">開始時間</label>
+            <input type="datetime-local" class="form-control" name="start_time">
+            <label for="end_time" class="form-label mt-2">終了時間</label>
+            <input type="datetime-local" class="form-control" name="end_time">
+        </div>
+
+        <!-- 体温 -->
+        <div class="mb-3 category-field" data-category="temperature" style="display:none;">
+            <label for="temperature" class="form-label">体温 (℃)</label>
+            <input type="number" step="0.1" class="form-control" name="temperature">
+        </div>
+
+        <!-- 離乳食 -->
+        <div class="mb-3 category-field" data-category="food" style="display:none;">
+            <label for="menu" class="form-label">メニュー</label>
+            <input type="text" class="form-control" name="menu">
+            <label for="amount" class="form-label mt-2">量</label>
+            <input type="text" class="form-control" name="food_amount">
+        </div>
+
+        <!-- 備考 -->
+        <div class="mb-3">
+            <label for="note" class="form-label">備考</label>
+            <textarea class="form-control" name="note" rows="2"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a href="{% url 'baby_record_overview' child.id %}" class="btn btn-secondary">キャンセル</a>
+    </form>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="text/javascript" src="{% static 'js/baby_record_add.js' %}"></script>
+
+{% endblock %}

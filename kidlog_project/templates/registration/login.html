@@ -1,0 +1,46 @@
+{% extends "base.html" %} {% block content %} {% load static %}
+
+<div class="bg-light d-flex align-items-center justify-content-center vh-100">
+    <div class="card shadow-sm" style="width: 100%; max-width: 400px;">
+        <div class="card-body">
+            <h3 class="text-center mb-4">ログイン</h3>
+
+            {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                ユーザー名またはパスワードが正しくありません。
+            </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">ユーザー名</label>
+                    <input type="text" name="username" autofocus class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="id_username" value="{{ form.username.value|default:'' }}"> {% for error in form.username.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_password" class="form-label">パスワード</label>
+                    <input type="password" name="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" id="id_password"> {% for error in form.password.errors %}
+                    <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <input type="hidden" name="next" value="{{ next }}">
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">ログイン</button>
+                </div>
+            </form>
+            <a class="btn btn-success d-grid mt-3" href="{% url 'signup' %}">新規登録</a>
+
+            <div class="text-center mt-3">
+                <a href="{% url 'password_reset' %}" class="text-muted small">パスワードをお忘れですか？</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

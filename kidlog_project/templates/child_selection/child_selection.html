@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block content %} {% load static %}
+<div class="container py-5">
+    <h2 class="text-center mb-4">子ども選択画面</h2>
+    <div class="row g-4 justify-content-center">
+
+        {% if children %} {% for child in children %}
+        <div class="col-md-4">
+            <div class="card p-2">
+                {% if child.photo %}
+                <img src="{{ child.photo.url }}" class="card-img-top" alt="{{ child.name }}"> {% else %}
+                <img src="https://via.placeholder.com/400x300?text=No+Photo" class="card-img-top"> {% endif %}
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ child.name }}</h5>
+                    <p>{{ child.age_years_months.0 }}歳 {{ child.age_years_months.1 }}か月</p>
+                    <div class="d-flex justify-content-center">
+                        <!-- 子ども選択ボタン -->
+                        <a href="{% url 'dashboard' child.id %}" class="btn btn-primary btn-sm me-2">選択</a>
+
+                        <!-- 子ども削除ボタン -->
+                        <form method="post" action="{% url 'delete_child' child.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('本当に削除しますか？');">削除</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %} {% endif %}
+
+        <!-- 子ども追加カード（子供がいない場合も表示） -->
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div class="card-body text-center">
+                    <a href="{% url 'add_child' %}" class="text-decoration-none text-muted">
+                        <div class="display-5"></div>
+                        <div>子どもを追加</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% endblock %}

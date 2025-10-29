@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block content %} {% load static %}
+
+<div class="bg-light d-flex align-items-center justify-content-center vh-100">
+
+    <div class="card shadow-sm" style="width: 100%; max-width: 420px;">
+        <div class="card-body">
+            <h3 class="text-center mb-4">新規登録</h3>
+
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                入力内容に誤りがあります。確認してください。
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">ユーザー名</label> {{ form.username }} {% for error in form.username.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_password1" class="form-label">パスワード</label> {{ form.password1 }} {% for error in form.password1.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_password2" class="form-label">パスワード（確認）</label> {{ form.password2 }} {% for error in form.password2.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success">登録する</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-3">
+                <a href="{% url 'login' %}" class="text-muted small">すでにアカウントをお持ちの方はこちら</a>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
