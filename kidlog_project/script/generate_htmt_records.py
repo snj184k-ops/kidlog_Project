@@ -17,22 +17,20 @@ def generate_growth_data(child_id: int, sex: str, filename: str):
         height_start, height_end = 49.0, 74.0
         weight_start, weight_end = 3.2, 8.9
 
-    # start_date = date.today() - timedelta(weeks=52)
-    start_date = date(2024, 10, 1)
+    # start日を指定する
+    start_date = date.today() - timedelta(weeks=52)
+    # start_date = date(2024, 10, 1)
 
     with open(filename, mode="w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["child_id", "height", "weight", "date"])  # ヘッダー
 
-        # for week in range(53):  # 0〜52週 (1年分)
-        for week in range(58):  # 0〜52週 (1年分)
+        for week in range(53):  # 0〜52週 (1年分)
             ts = start_date + timedelta(weeks=week)
 
             # 線形補間 (0週→start, 52週→end)
-            # height = height_start + (height_end - height_start) * (week / 52)
-            # weight = weight_start + (weight_end - weight_start) * (week / 52)
-            height = height_start + (height_end - height_start) * (week / 58)
-            weight = weight_start + (weight_end - weight_start) * (week / 58)
+            height = height_start + (height_end - height_start) * (week / 52)
+            weight = weight_start + (weight_end - weight_start) * (week / 52)
 
             # ±2% のノイズを加えるとリアル感が出る
             height *= random.uniform(0.98, 1.02)
@@ -57,7 +55,7 @@ if __name__ == "__main__":
         "sex", type=str, choices=["male", "female"], help="性別 (male/female)"
     )
     parser.add_argument(
-        "--output", type=str, default="htmt_records.csv", help="出力ファイル名"
+        "--output", type=str, default="data/htmt_records.csv", help="出力ファイル名"
     )
     args = parser.parse_args()
 
